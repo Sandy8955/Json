@@ -1,0 +1,21 @@
+INSERT INTO UNIT_BRAND_MAPPING(FINYEAR,MFG_LICENSEE_ID,BRAND_ID,MFG_UNIT_ID,CREATED_BY,CREATED_ON)
+Select FinYearId, LicenseeId, BrandId, UnitId, CreatedBy, SYSDATE from (
+
+With CTE AS(
+SELECT distinct j.FinYearId, j.LicenseeId, j.BrandId, j.CreatedBy,UnitId
+FROM (
+SELECT utl_raw.cast_to_raw(IN_JSON_DATA) AS PackagingDetails FROM dual
+) d,
+json_table (
+d.PackagingDetails, '$' COLUMNS (
+NESTED PATH '$[*]'
+COLUMNS (
+FinYearId PATH '$.FinYearId',
+LicenseeId PATH '$.LicenseeId',
+BrandId PATH '$.BrandId',
+PackingId PATH '$.PackingId',
+CreatedBy PATH '$.CreatedBy',
+UnitId PATH '$.UnitId'
+)
+)
+) j )
